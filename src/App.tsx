@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('home');
 
   useEffect(() => {
+    void backgroundMusic.initAutoplay();
     return () => {
       backgroundMusic.destroy();
     };

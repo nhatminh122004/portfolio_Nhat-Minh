@@ -73,7 +73,7 @@ Canvas 3D toàn màn hình trong [`NeuralCoreCanvas.tsx`](src/components/3d/Neur
 Được quản lý qua singleton [`BackgroundMusicController`](src/utils/backgroundMusic.ts) gắn với nút loa trên thanh Header ([`Navigation.tsx`](src/components/Navigation.tsx)):
 
 - **Bản nhạc chính thức:** *Vastness — Andrew Ev* (Mixkit Free License, `/audio/vastness-andrew-ev.mp3`).
-- **Tôn trọng Autoplay & Mobile:** Mặc định **tắt tiếng** khi mở web; chỉ phát sau thao tác click, xử lý `AudioContext` + `MediaElementAudioSourceNode` + `GainNode` đảm bảo trần âm lượng **tối đa 15%** ngay cả trên **iOS Safari**.
+- **Mở mặc định & An toàn Autoplay:** Tự động phát ngay khi vào web (nếu trình duyệt chặn autoplay khi chưa có thao tác, hệ thống tự kích hoạt mượt ngay ở cú chạm/nhấp chuột/phím đầu tiên), xử lý qua `AudioContext` + `MediaElementAudioSourceNode` + `GainNode` đảm bảo trần âm lượng **tối đa 15%** kể cả trên **iOS Safari**.
 - **Chuyển tiếp mượt mà:** **Fade-in 1.5 giây** khi bật, **Fade-out 1.0 giây** rồi tạm dừng giữ nguyên timestamp (`currentTime`) khi tắt, kèm cross-fade tại ranh giới lặp để **vòng lặp vô tận không có tiếng click/khựng**.
 - **Bền vững xuyên suốt:** Không bị reset khi chuyển ngôn ngữ `VI ↔ EN`, cuộn trang hay đóng/mở Modal chi tiết.
 

@@ -18,6 +18,8 @@ class BackgroundMusicController {
 
   private playing = false;
   private listeners = new Set<Listener>();
+  private epoch = 0;
+  private unlockArmed = false;
 
   // Fade envelope tracking for accurate mid-fade interruption across all browsers
   private currentGain = 0;
@@ -33,6 +35,7 @@ class BackgroundMusicController {
   private onTimeUpdateBound = () => this.handleTimeUpdate();
   private onEndedBound = () => this.handleEnded();
   private onErrorBound = () => this.handleAudioError();
+  private onFirstGestureBound = (e: Event) => this.handleFirstGesture(e);
 
   public getIsPlaying(): boolean {
     return this.playing;
@@ -82,7 +85,7 @@ class BackgroundMusicController {
       const ctx = new AudioCtx();
       const source = ctx.createMediaElementSource(el);
       const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.setValueAtTime(this.currentGain, ctx.currentTime);
 
       source.connect(gain);
       gain.connect(ctx.destination);
@@ -239,6 +242,7 @@ class BackgroundMusicController {
   }
 
   private handleAudioError(): void {
+    this.disarmUnlockListeners();
     this.cancelFade();
     if (this.pauseTimeoutId !== null) {
       clearTimeout(this.pauseTimeoutId);
@@ -249,7 +253,72 @@ class BackgroundMusicController {
     this.notifyListeners();
   }
 
+  private armUnlockListeners(): void {
+    if (this.unlockArmed || typeof window === 'undefined') return;
+    this.unlockArmed = true;
+    window.addEventListener('click', this.onFirstGestureBound, { capture: true, passive: true });
+    window.addEventListener('touchend', this.onFirstGestureBound, { capture: true, passive: true });
+    window.addEventListener('keydown', this.onFirstGestureBound, { capture: true, passive: true });
+  }
+
+  private disarmUnlockListeners(): void {
+    if (!this.unlockArmed || typeof window === 'undefined') return;
+    this.unlockArmed = false;
+    window.removeEventListener('click', this.onFirstGestureBound, { capture: true });
+    window.removeEventListener('touchend', this.onFirstGestureBound, { capture: true });
+    window.removeEventListener('keydown', this.onFirstGestureBound, { capture: true });
+  }
+
+  private handleFirstGesture(e: Event): void {
+    this.disarmUnlockListeners();
+    const target = e.target as Element | null;
+    // Let the speaker toggle button's own onClick handle play/pause directly
+    if (target?.closest?.('[data-music-toggle="true"]')) return;
+    if (!this.playing) {
+      void this.play();
+    }
+  }
+
+  /** Attempts autoplay immediately on page load, falling back to first-interaction unlock if blocked. */
+  public async initAutoplay(): Promise<boolean> {
+    if (this.playing) return true;
+    const currentEpoch = this.epoch;
+    const el = this.ensureAudioElement();
+    if (!el) return false;
+
+    try {
+      el.volume = 0;
+      this.setGainImmediate(0);
+      this.loopState = 'idle';
+      this.playing = true;
+
+      await el.play();
+
+      if (currentEpoch !== this.epoch || !this.playing || el.paused) {
+        if (currentEpoch === this.epoch) {
+          this.playing = false;
+          this.notifyListeners();
+        }
+        return false;
+      }
+
+      this.disarmUnlockListeners();
+      this.notifyListeners();
+      this.fadeTo(MAX_VOLUME, FADE_IN_MS);
+      return true;
+    } catch {
+      if (currentEpoch !== this.epoch) return false;
+      this.playing = false;
+      el.pause();
+      this.setGainImmediate(0);
+      this.notifyListeners();
+      this.armUnlockListeners();
+      return false;
+    }
+  }
+
   public async toggle(): Promise<boolean> {
+    this.disarmUnlockListeners();
     if (this.playing) {
       this.pause();
       return false;
@@ -258,6 +327,8 @@ class BackgroundMusicController {
   }
 
   public async play(): Promise<boolean> {
+    this.disarmUnlockListeners();
+    const currentEpoch = this.epoch;
     const el = this.ensureAudioElement();
     if (!el) return false;
 
@@ -288,13 +359,14 @@ class BackgroundMusicController {
 
       await el.play();
 
-      // Guard if user toggled pause while play() promise was pending
-      if (!this.playing || el.paused) return false;
+      // Guard if user toggled pause or controller tore down while play() promise was pending
+      if (currentEpoch !== this.epoch || !this.playing || el.paused) return false;
 
       this.setGainImmediate(startingGain);
       this.fadeTo(MAX_VOLUME, FADE_IN_MS);
       return true;
     } catch {
+      if (currentEpoch !== this.epoch) return false;
       this.playing = false;
       this.setGainImmediate(0);
       this.notifyListeners();
@@ -303,6 +375,7 @@ class BackgroundMusicController {
   }
 
   public pause(): void {
+    this.disarmUnlockListeners();
     this.playing = false;
     this.loopState = 'idle';
     this.notifyListeners();
@@ -318,6 +391,8 @@ class BackgroundMusicController {
   }
 
   public destroy(): void {
+    this.epoch += 1;
+    this.disarmUnlockListeners();
     this.cancelFade();
     if (this.pauseTimeoutId !== null) {
       clearTimeout(this.pauseTimeoutId);

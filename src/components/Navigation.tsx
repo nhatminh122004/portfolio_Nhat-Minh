@@ -151,6 +151,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Background Music Toggle */}
               <button
+                data-music-toggle="true"
                 onClick={handleSoundToggle}
                 onMouseEnter={playHover}
                 title={lang === 'vi' ? 'Bật / Tắt nhạc nền' : 'Toggle background music'}
