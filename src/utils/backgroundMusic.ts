@@ -7,7 +7,20 @@ const FADE_OUT_MS = 1000;
 const LOOP_FADE_OUT_WINDOW_SEC = 0.35;
 const LOOP_FADE_IN_MS = 600;
 
-type Listener = (isPlaying: boolean) => void;
+export interface MusicState {
+  isPlaying: boolean;
+  awaitingUnlock: boolean;
+}
+
+type Listener = (state: MusicState) => void;
+
+const UNLOCK_EVENTS: ReadonlyArray<keyof WindowEventMap> = [
+  'pointerdown',
+  'mousedown',
+  'click',
+  'touchend',
+  'keydown',
+];
 
 class BackgroundMusicController {
   private audio: HTMLAudioElement | null = null;
@@ -17,6 +30,8 @@ class BackgroundMusicController {
   private webAudioFailed = false;
 
   private playing = false;
+  private awaitingUnlock = false;
+  private userPaused = false;
   private listeners = new Set<Listener>();
   private epoch = 0;
   private unlockArmed = false;
@@ -41,16 +56,24 @@ class BackgroundMusicController {
     return this.playing;
   }
 
+  public getState(): MusicState {
+    return {
+      isPlaying: this.playing,
+      awaitingUnlock: this.awaitingUnlock,
+    };
+  }
+
   public subscribe(listener: Listener): () => void {
     this.listeners.add(listener);
-    listener(this.playing);
+    listener(this.getState());
     return () => {
       this.listeners.delete(listener);
     };
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach((fn) => fn(this.playing));
+    const snapshot = this.getState();
+    this.listeners.forEach((fn) => fn(snapshot));
   }
 
   private ensureAudioElement(): HTMLAudioElement | null {
@@ -249,6 +272,7 @@ class BackgroundMusicController {
       this.pauseTimeoutId = null;
     }
     this.playing = false;
+    this.awaitingUnlock = false;
     this.loopState = 'idle';
     this.notifyListeners();
   }
@@ -256,32 +280,41 @@ class BackgroundMusicController {
   private armUnlockListeners(): void {
     if (this.unlockArmed || typeof window === 'undefined') return;
     this.unlockArmed = true;
-    window.addEventListener('click', this.onFirstGestureBound, { capture: true, passive: true });
-    window.addEventListener('touchend', this.onFirstGestureBound, { capture: true, passive: true });
-    window.addEventListener('keydown', this.onFirstGestureBound, { capture: true, passive: true });
+    for (const evt of UNLOCK_EVENTS) {
+      window.addEventListener(evt, this.onFirstGestureBound, { capture: true, passive: true });
+    }
   }
 
   private disarmUnlockListeners(): void {
     if (!this.unlockArmed || typeof window === 'undefined') return;
     this.unlockArmed = false;
-    window.removeEventListener('click', this.onFirstGestureBound, { capture: true });
-    window.removeEventListener('touchend', this.onFirstGestureBound, { capture: true });
-    window.removeEventListener('keydown', this.onFirstGestureBound, { capture: true });
+    for (const evt of UNLOCK_EVENTS) {
+      window.removeEventListener(evt, this.onFirstGestureBound, { capture: true });
+    }
   }
 
-  private handleFirstGesture(e: Event): void {
-    this.disarmUnlockListeners();
+  private async handleFirstGesture(e: Event): Promise<void> {
     const target = e.target as Element | null;
     // Let the speaker toggle button's own onClick handle play/pause directly
     if (target?.closest?.('[data-music-toggle="true"]')) return;
-    if (!this.playing) {
-      void this.play();
+    if (this.playing || this.userPaused) return;
+
+    const currentEpoch = this.epoch;
+    const started = await this.play();
+    if (started || currentEpoch !== this.epoch || this.userPaused) {
+      this.disarmUnlockListeners();
+      return;
     }
+
+    // Keep listeners armed if this gesture was not accepted as media activation (e.g. mobile scroll touchend)
+    this.awaitingUnlock = true;
+    this.notifyListeners();
+    this.armUnlockListeners();
   }
 
   /** Attempts autoplay immediately on page load, falling back to first-interaction unlock if blocked. */
   public async initAutoplay(): Promise<boolean> {
-    if (this.playing) return true;
+    if (this.playing || this.userPaused) return this.playing;
     const currentEpoch = this.epoch;
     const el = this.ensureAudioElement();
     if (!el) return false;
@@ -291,6 +324,7 @@ class BackgroundMusicController {
       this.setGainImmediate(0);
       this.loopState = 'idle';
       this.playing = true;
+      this.awaitingUnlock = false;
 
       await el.play();
 
@@ -311,8 +345,11 @@ class BackgroundMusicController {
       this.playing = false;
       el.pause();
       this.setGainImmediate(0);
+      if (!this.userPaused) {
+        this.awaitingUnlock = true;
+        this.armUnlockListeners();
+      }
       this.notifyListeners();
-      this.armUnlockListeners();
       return false;
     }
   }
@@ -327,7 +364,6 @@ class BackgroundMusicController {
   }
 
   public async play(): Promise<boolean> {
-    this.disarmUnlockListeners();
     const currentEpoch = this.epoch;
     const el = this.ensureAudioElement();
     if (!el) return false;
@@ -339,6 +375,8 @@ class BackgroundMusicController {
       this.pauseTimeoutId = null;
     }
 
+    this.userPaused = false;
+    this.awaitingUnlock = false;
     this.loopState = 'idle';
     this.playing = true;
     this.notifyListeners();
@@ -362,6 +400,7 @@ class BackgroundMusicController {
       // Guard if user toggled pause or controller tore down while play() promise was pending
       if (currentEpoch !== this.epoch || !this.playing || el.paused) return false;
 
+      this.disarmUnlockListeners();
       this.setGainImmediate(startingGain);
       this.fadeTo(MAX_VOLUME, FADE_IN_MS);
       return true;
@@ -376,6 +415,8 @@ class BackgroundMusicController {
 
   public pause(): void {
     this.disarmUnlockListeners();
+    this.userPaused = true;
+    this.awaitingUnlock = false;
     this.playing = false;
     this.loopState = 'idle';
     this.notifyListeners();
@@ -432,6 +473,8 @@ class BackgroundMusicController {
     }
 
     this.playing = false;
+    this.awaitingUnlock = false;
+    this.userPaused = false;
     this.currentGain = 0;
     this.loopState = 'idle';
     this.notifyListeners();

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Volume2, VolumeX, Menu, X, Globe, Sparkles } from 'lucide-react';
 import { Language } from '../types';
 import { playClick, playHover } from '../utils/soundEffects';
-import { backgroundMusic } from '../utils/backgroundMusic';
+import { backgroundMusic, MusicState } from '../utils/backgroundMusic';
 
 interface NavigationProps {
   lang: Language;
@@ -17,10 +17,12 @@ export const Navigation: React.FC<NavigationProps> = ({
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [soundOn, setSoundOn] = useState<boolean>(() => backgroundMusic.getIsPlaying());
+  const [musicState, setMusicState] = useState<MusicState>(() => backgroundMusic.getState());
+  const soundOn = musicState.isPlaying;
+  const awaitingUnlock = musicState.awaitingUnlock;
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  useEffect(() => backgroundMusic.subscribe(setSoundOn), []);
+  useEffect(() => backgroundMusic.subscribe(setMusicState), []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -154,10 +156,20 @@ export const Navigation: React.FC<NavigationProps> = ({
                 data-music-toggle="true"
                 onClick={handleSoundToggle}
                 onMouseEnter={playHover}
-                title={lang === 'vi' ? 'Bật / Tắt nhạc nền' : 'Toggle background music'}
+                title={
+                  lang === 'vi'
+                    ? awaitingUnlock
+                      ? 'Trình duyệt chờ thao tác đầu tiên — bấm để phát nhạc nền'
+                      : 'Bật / Tắt nhạc nền'
+                    : awaitingUnlock
+                    ? 'Click anywhere or press here to start background music'
+                    : 'Toggle background music'
+                }
                 className={`p-2 rounded-lg border transition-all duration-200 text-xs flex items-center justify-center ${
                   soundOn
                     ? 'border-cyan/60 bg-cyan/15 text-cyan shadow-[0_0_12px_rgba(0,229,255,0.3)]'
+                    : awaitingUnlock
+                    ? 'border-cyan/50 bg-cyan/10 text-cyan/90 animate-pulse shadow-[0_0_10px_rgba(0,229,255,0.2)]'
                     : 'border-space-700 bg-space-900/80 text-slate-400 hover:text-white hover:border-slate-500'
                 }`}
                 aria-label={
