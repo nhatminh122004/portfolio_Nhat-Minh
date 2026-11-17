@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./logo-tachne.png">
+    <title data-i18n="page_title">Nguyễn Nhất Minh | Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0ea5e9', // Sky 500
+                        secondary: '#38bdf8', // Sky 400
+                        darkbg: '#0f172a', // Slate 900
+                        cardbg: '#1e293b', // Slate 800
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-effect {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Reveal animation classes */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        /* New custom styles for enhanced UI */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+        }
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+        .glow-border {
+            position: relative;
+        }
+        .glow-border::before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #0ea5e9, #8b5cf6, #0ea5e9, #8b5cf6);
+            background-size: 200% 200%;
+            z-index: -1;
+            animation: spin-gradient 4s linear infinite;
+        }
+        @keyframes spin-gradient { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Language Toggle Switch */
+        .lang-btn {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .lang-btn.active {
+            background-color: #0ea5e9;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.5);
+        }
+        .lang-btn:not(.active) {
+            color: #94a3b8;
+        }
+        .lang-btn:not(.active):hover {
+            color: white;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-effect transition-all duration-300 border-b border-slate-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0 flex items-center gap-3 group cursor-pointer">
+                    <!-- AI Neural Network 'M' Logo -->
+                   <img src="./logo-tachne.png" alt="logo" onerror="this.src='https://ui-avatars.com/api/?name=M&background=0ea5e9&color=fff&rounded=true'"
+     class="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-[0_0_12px_rgba(14,165,233,1)] hover:drop-shadow-[0_0_20px_rgba(56,189,248,1)] hover:scale-125 transition-all duration-300 ease-out">
+                    <a href="#" class="font-bold text-lg md:text-xl tracking-wider text-white">N.N.<span class="text-primary">MINH</span></a>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-8">
+                                <a href="#about" class="hover:text-primary transition-colors px-3 py-2 text-sm font-medium" data-i18n="nav_about">Giới thiệu</a>
+                                <a href="#experience" class="hover:text-primary transition-colors px-3 py-2 text-sm font-medium" data-i18n="nav_exp">Kinh nghiệm</a>
+                                <a href="#achievements" class="hover:text-primary transition-colors px-3 py-2 text-sm font-medium" data-i18n="nav_achievements">Thành tích</a>
+                                <a href="#skills" class="hover:text-primary transition-colors px-3 py-2 text-sm font-medium" data-i18n="nav_skills">Kỹ năng</a>
+                                <a href="#contact" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-full text-sm font-medium transition-all shadow-lg shadow-primary/30" data-i18n="nav_contact">Liên hệ</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Language Toggle -->
+                        <button onclick="toggleLanguage()" id="lang-toggle-btn" class="ml-4 flex items-center px-3 py-1 rounded-full bg-slate-700 hover:bg-primary text-sm font-medium transition-colors border border-slate-600 hover:border-primary">
+                            🌐 EN
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center pt-20 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-grid">
+        <!-- Background decorative elements -->
+        <div class="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob"></div>
+        <div class="absolute top-40 right-10 w-72 h-72 bg-indigo-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+
+        <div class="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12 relative z-10">
+            <div class="flex-1 text-center md:text-left reveal active">
+                <p class="text-primary font-medium tracking-wide mb-2 flex items-center justify-center md:justify-start gap-2">
+                    <span class="w-8 h-px bg-primary inline-block"></span> <span data-i18n="hero_hello">Xin chào, tôi là</span>
+                </p>
+                <h1 class="text-5xl md:text-6xl font-extrabold mb-4 tracking-tight drop-shadow-md" data-i18n="hero_name">
+                    Nguyễn Nhất Minh
+                </h1>
+                <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-slate-300 h-10">
+                    <span id="typing-text" class="text-gradient typing-cursor"></span>
+                </h2>
+                <p class="text-slate-400 text-lg mb-8 max-w-2xl leading-relaxed" data-i18n="hero_desc">
+                    Định hướng phát triển trong lĩnh vực AI ứng dụng. Khát khao triển khai và vận hành các giải pháp công nghệ tiên tiến vào thực tiễn doanh nghiệp.
+                </p>
+                
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                    <a href="#contact" class="bg-primary hover:bg-secondary hover:-translate-y-1 text-white px-8 py-3 rounded-full font-medium transition-all shadow-[0_0_20px_rgba(14,165,233,0.4)] flex items-center gap-2">
+                        <i class="fas fa-paper-plane"></i> <span data-i18n="hero_collab">Hợp tác cùng tôi</span>
+                    </a>
+                    <a href="https://www.linkedin.com/in/nguyennhatminh1/" target="_blank" class="glass-effect hover:bg-slate-800 hover:-translate-y-1 text-white px-8 py-3 rounded-full font-medium transition-all flex items-center gap-2">
+                        <i class="fab fa-linkedin text-[#0A66C2]"></i> LinkedIn
+                    </a>
+                </div>
+
+                <div class="mt-10 flex items-center justify-center md:justify-start gap-6 text-slate-400">
+                    <a href="https://www.facebook.com/nhatminh19122004/" target="_blank" class="hover:text-primary hover:-translate-y-1 transition-all text-2xl"><i class="fab fa-facebook"></i></a>
+                    <a href="mailto:nhatminh122004@gmail.com" class="hover:text-primary hover:-translate-y-1 transition-all text-2xl"><i class="fas fa-envelope"></i></a>
+                    <a href="tel:0364244786" class="hover:text-primary hover:-translate-y-1 transition-all text-2xl"><i class="fas fa-phone"></i></a>
+                </div>
+            </div>
+            
+            <div class="flex-1 flex justify-center md:justify-end reveal active">
+                <div class="relative w-64 h-64 md:w-80 md:h-80 glow-border rounded-full p-2 bg-slate-900 shadow-[0_0_40px_rgba(14,165,233,0.3)]">
+                    <img src="./1766512773841.jpg" alt="Nguyễn Nhất Minh" onerror="this.src='https://ui-avatars.com/api/?name=Nguyễn+Nhất+Minh&size=512&background=0D8ABC&color=fff'" class="rounded-full w-full h-full object-cover border-4 border-slate-900 relative z-10">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Objective / About Section -->
+    <section id="about" class="py-20 bg-slate-800/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+            <h2 class="text-3xl font-bold mb-8 inline-block relative">
+                <span data-i18n="about_title">Mục Tiêu Nghề Nghiệp</span>
+                <div class="absolute w-1/2 h-1 bg-primary bottom-[-10px] left-1/4 rounded-full"></div>
+            </h2>
+            <div class="glass-effect p-8 rounded-2xl text-left md:text-center shadow-xl">
+                <i class="fas fa-quote-left text-3xl text-primary/40 mb-4 block"></i>
+              <p class="text-lg text-slate-300 leading-relaxed" style="text-align: justify; text-justify: inter-word;" data-i18n="about_desc">
+    Tôi định hướng phát triển sự nghiệp trong lĩnh vực <strong>Công nghệ thông tin</strong>, tập trung vào <strong>ứng dụng trí tuệ nhân tạo (AI) và các giải pháp công nghệ hiện đại</strong> vào thực tiễn. Mục tiêu của tôi là trở thành một nhân sự kỹ thuật có khả năng phân tích, thiết kế và triển khai các hệ thống hiệu quả, góp phần tối ưu vận hành và gia tăng giá trị cho doanh nghiệp. Tôi luôn chủ động trau dồi kiến thức, cập nhật công nghệ mới và tích lũy kinh nghiệm dự án, hướng đến xây dựng nền tảng vững chắc trong AI ứng dụng, dữ liệu và tự động hóa, với mục tiêu dài hạn trở thành chuyên gia công nghệ tạo ra các giải pháp thực tiễn, bền vững.
+</p>
+                <i class="fas fa-quote-right text-3xl text-primary/40 mt-4 block text-right"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Timeline -->
+    <section id="experience" class="py-20">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold mb-12 text-center relative reveal">
+                <span data-i18n="exp_title">Kinh Nghiệm Làm Việc</span>
+                <div class="absolute w-24 h-1 bg-primary bottom-[-10px] left-1/2 transform -translate-x-1/2 rounded-full"></div>
+            </h2>
+
+            <div class="relative border-l-2 border-slate-700 ml-3 md:ml-6 space-y-12">
+                
+                <!-- Experience 0 (Current) -->
+                <div class="relative pl-8 md:pl-12 reveal">
+                    <div class="absolute w-6 h-6 bg-primary rounded-full -left-[13px] top-1 border-4 border-slate-900 shadow-lg shadow-primary/50"></div>
+                    <div class="glass-effect p-6 rounded-xl hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-white" data-i18n="exp1_role">Chuyên Viên Kỹ Thuật</h3>
+                                <p class="text-primary font-medium" data-i18n="exp1_company">Viện Nghiên Cứu Giáo Dục và Kinh Tế Quốc Tế (ISIEE)</p>
+                            </div>
+                            <span class="text-slate-400 bg-slate-800 px-3 py-1 rounded-full text-sm mt-2 md:mt-0 inline-block w-max" data-i18n="exp1_time">10/2025 - Nay</span>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-300 space-y-2 marker:text-primary">
+                            <li data-i18n="exp1_desc1">Quản lý, vận hành và đảm bảo sự ổn định cho các hệ thống kỹ thuật công nghệ của Viện.</li>
+                            <li data-i18n="exp1_desc2">Nghiên cứu và hỗ trợ triển khai các giải pháp số hóa, ứng dụng AI phục vụ công tác giáo dục và kinh tế.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Experience 1 -->
+                <div class="relative pl-8 md:pl-12 reveal">
+                    <div class="absolute w-6 h-6 bg-slate-600 rounded-full -left-[13px] top-1 border-4 border-slate-900"></div>
+                    <div class="glass-effect p-6 rounded-xl hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-white" data-i18n="exp2_role">Intern AI Prompt</h3>
+                                <p class="text-primary font-medium" data-i18n="exp2_company">Công ty Cổ Phần SELA HOLDINGS</p>
+                            </div>
+                            <span class="text-slate-400 bg-slate-800 px-3 py-1 rounded-full text-sm mt-2 md:mt-0 inline-block w-max" data-i18n="exp2_time">07/2025 - 09/2025</span>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-300 space-y-2 marker:text-primary">
+                            <li data-i18n="exp2_desc1"><strong>Phát triển nội dung học tập bằng AI:</strong> Sử dụng ChatGPT tạo kịch bản, lý thuyết, hội thoại, tối ưu và cá nhân hóa nội dung cho học viên.</li>
+                            <li data-i18n="exp2_desc2"><strong>Tạo video học sinh động:</strong> Ứng dụng Capcut và VEO3 tạo/chỉnh sửa video, thêm hiệu ứng, âm thanh, tăng tính tương tác.</li>
+                            <li data-i18n="exp2_desc3"><strong>Phân tích dữ liệu:</strong> Sử dụng AI phân tích tiến độ, đề xuất bài học và điều chỉnh mức độ khó phù hợp với từng cá nhân.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Experience 2 -->
+                <div class="relative pl-8 md:pl-12 reveal">
+                    <div class="absolute w-6 h-6 bg-slate-600 rounded-full -left-[13px] top-1 border-4 border-slate-900"></div>
+                    <div class="glass-effect p-6 rounded-xl hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-white" data-i18n="exp3_role">Cộng tác viên CT-CTSV</h3>
+                                <p class="text-primary font-medium" data-i18n="exp3_company">Phòng Chính Trị - Công Tác Sinh Viên HUFLIT</p>
+                            </div>
+                            <span class="text-slate-400 bg-slate-800 px-3 py-1 rounded-full text-sm mt-2 md:mt-0 inline-block w-max" data-i18n="exp3_time">03/2025 - 10/2025</span>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-300 space-y-2 marker:text-primary">
+                            <li data-i18n="exp3_desc1">Tiếp nhận thông tin ban đầu, hỗ trợ và giải đáp thắc mắc cho phụ huynh và sinh viên.</li>
+                            <li data-i18n="exp3_desc2">Hỗ trợ tổ chức các chương trình của phòng, thực hiện nghiệp vụ và ghi nhận vấn đề.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Experience 3 -->
+                <div class="relative pl-8 md:pl-12 reveal">
+                    <div class="absolute w-6 h-6 bg-slate-600 rounded-full -left-[13px] top-1 border-4 border-slate-900"></div>
+                    <div class="glass-effect p-6 rounded-xl hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-white" data-i18n="exp4_role">Trưởng phòng Technology</h3>
+                                <p class="text-primary font-medium" data-i18n="exp4_company">CLB Fintech và Đầu tư tài chính HUFLIT</p>
+                            </div>
+                            <span class="text-slate-400 bg-slate-800 px-3 py-1 rounded-full text-sm mt-2 md:mt-0 inline-block w-max" data-i18n="exp4_time">2023 - 06/2024</span>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-300 space-y-2 marker:text-primary">
+                            <li data-i18n="exp4_desc1">Điều hành, quản lý các vấn đề IT của CLB trong sự kiện.</li>
+                            <li data-i18n="exp4_desc2">Tư vấn IT cho Ban Chấp hành và hỗ trợ thành viên về công nghệ.</li>
+                            <li data-i18n="exp4_desc3">Xây dựng và thiết kế nội dung truyền thông cho workshop, chia sẻ công nghệ.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Experience 4 -->
+                <div class="relative pl-8 md:pl-12 reveal">
+                    <div class="absolute w-6 h-6 bg-slate-600 rounded-full -left-[13px] top-1 border-4 border-slate-900"></div>
+                    <div class="glass-effect p-6 rounded-xl hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-white" data-i18n="exp5_role">IT Research - Blockchain</h3>
+                                <p class="text-primary font-medium" data-i18n="exp5_company">Mạng lưới Thúc đẩy Fintech và Tài sản số (FADA)</p>
+                            </div>
+                            <span class="text-slate-400 bg-slate-800 px-3 py-1 rounded-full text-sm mt-2 md:mt-0 inline-block w-max" data-i18n="exp5_time">06/2023 - 06/2024</span>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-300 space-y-2 marker:text-primary">
+                            <li data-i18n="exp5_desc1">Nghiên cứu chuyên sâu xu hướng blockchain (DeFi, Layer 1/2, NFT, GameFi, ZKP) phục vụ chiến lược.</li>
+                            <li data-i18n="exp5_desc2">Tổng hợp dữ liệu (CoinMarketCap, Dune Analytics...) viết báo cáo thị trường và đề xuất giải pháp.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Achievements & Awards -->
+    <section id="achievements" class="py-20 bg-slate-800/50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold mb-12 text-center relative reveal">
+                <span data-i18n="achv_title">Thành Tích & Danh Hiệu</span>
+                <div class="absolute w-24 h-1 bg-yellow-500 bottom-[-10px] left-1/2 transform -translate-x-1/2 rounded-full"></div>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Award 1 -->
+                <div class="glass-effect p-6 rounded-xl border border-yellow-500/20 hover:border-yellow-500/50 transition-all group reveal">
+                    <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-star text-2xl text-yellow-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-i18n="achv1_title">Sinh viên 5 tốt cấp trường</h3>
+                    <p class="text-slate-400 text-sm" data-i18n="achv1_desc">Trường ĐH Ngoại Ngữ - Tin học TPHCM (HUFLIT)</p>
+                    <p class="text-primary text-xs mt-2 font-semibold" data-i18n="achv_year">Năm học 2024 - 2025</p>
+                </div>
+
+                <!-- Award 2 -->
+                <div class="glass-effect p-6 rounded-xl border border-yellow-500/20 hover:border-yellow-500/50 transition-all group reveal">
+                    <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-award text-2xl text-yellow-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-i18n="achv2_title">Đoàn viên Xuất sắc</h3>
+                    <p class="text-slate-400 text-sm" data-i18n="achv2_desc">Hoàn thành xuất sắc nhiệm vụ - Trường ĐH HUFLIT</p>
+                    <p class="text-primary text-xs mt-2 font-semibold" data-i18n="achv_year">Năm học 2024 - 2025</p>
+                </div>
+
+                <!-- Award 3 -->
+                <div class="glass-effect p-6 rounded-xl border border-yellow-500/20 hover:border-yellow-500/50 transition-all group reveal">
+                    <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-certificate text-2xl text-yellow-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-i18n="achv3_title">Giấy khen cuộc thi "Đảng trong tôi"</h3>
+                    <p class="text-slate-400 text-sm" data-i18n="achv1_desc">Trường ĐH Ngoại Ngữ - Tin học TPHCM (HUFLIT)</p>
+                </div>
+
+                <!-- Award 4 -->
+                <div class="glass-effect p-6 rounded-xl border border-yellow-500/20 hover:border-yellow-500/50 transition-all group reveal">
+                    <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-trophy text-2xl text-yellow-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-i18n="achv4_title">Bằng khen cuộc thi "Đảng trong tôi"</h3>
+                    <p class="text-slate-400 text-sm" data-i18n="achv4_desc">Tỉnh Ủy Tiền Giang (trước khi sáp nhập)</p>
+                </div>
+
+                <!-- Award 5 -->
+                <div class="glass-effect p-6 rounded-xl border border-yellow-500/20 hover:border-yellow-500/50 transition-all group reveal">
+                    <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-medal text-2xl text-yellow-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-i18n="achv5_title">Thanh niên tiên tiến làm theo lời Bác</h3>
+                    <p class="text-slate-400 text-sm" data-i18n="achv5_desc">Cấp Khoa - Trường ĐH Ngoại Ngữ - Tin học TPHCM</p>
+                    <p class="text-primary text-xs mt-2 font-semibold" data-i18n="achv_year">Năm học 2024 - 2025</p>
+                </div>
+
+                <!-- Award 6 -->
+                <div class="glass-effect p-6 rounded-xl border border-yellow-500/20 hover:border-yellow-500/50 transition-all group reveal">
+                    <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-crown text-2xl text-yellow-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-i18n="achv6_title">Cán bộ Đoàn - Hội Xuất Sắc</h3>
+                    <p class="text-slate-400 text-sm" data-i18n="achv1_desc">Trường ĐH Ngoại Ngữ - Tin học TPHCM (HUFLIT)</p>
+                    <p class="text-primary text-xs mt-2 font-semibold" data-i18n="achv_year">Năm học 2024 - 2025</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education, Certs & Skills -->
+    <section id="skills" class="py-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                
+                <!-- Left Column: Edu & Certs -->
+                <div class="space-y-12">
+                    <div class="reveal">
+                        <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                            <i class="fas fa-graduation-cap text-primary"></i> <span data-i18n="edu_title">Học Vấn</span>
+                        </h2>
+                        <div class="glass-effect p-6 rounded-xl border-l-4 border-primary">
+                            <h3 class="text-xl font-bold text-white" data-i18n="edu_uni">Đại học Ngoại Ngữ - Tin Học TPHCM (HUFLIT)</h3>
+                            <p class="text-slate-300 mt-2" data-i18n="edu_major"><strong>Ngành:</strong> Công nghệ thông tin</p>
+                            <p class="text-slate-300" data-i18n="edu_spec"><strong>Chuyên ngành:</strong> Công nghệ Phần mềm</p>
+                            <p class="text-primary text-sm mt-2 font-semibold" data-i18n="edu_time">2022 - Nay</p>
+                        </div>
+                    </div>
+
+                    <div class="reveal">
+                        <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                            <i class="fas fa-file-contract text-primary"></i> <span data-i18n="cert_title">Chứng Chỉ</span>
+                        </h2>
+                        <div class="glass-effect p-6 rounded-xl">
+                            <ul class="space-y-4">
+                                <li class="flex items-center gap-3 text-slate-300">
+                                    <i class="fas fa-check-circle text-green-400"></i> Video Editing Basics
+                                </li>
+                                <li class="flex items-center gap-3 text-slate-300">
+                                    <i class="fas fa-check-circle text-green-400"></i> Google Analytics for Beginners
+                                </li>
+                                <li class="flex items-center gap-3 text-slate-300">
+                                    <i class="fas fa-check-circle text-green-400"></i> Advanced Google Analytics
+                                </li>
+                                <li class="flex items-center gap-3 text-slate-300">
+                                    <i class="fas fa-check-circle text-green-400"></i> Getting Started with Google Analytics 360
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Skills -->
+                <div class="reveal">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                        <i class="fas fa-lightbulb text-primary"></i> <span data-i18n="skill_title">Kỹ Năng Chuyên Môn & Mềm</span>
+                    </h2>
+                    <div class="glass-effect p-6 rounded-xl">
+                        <div class="flex flex-wrap gap-3">
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_1">Ứng dụng AI (ChatGPT, VEO3...)</span>
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_2">Phân tích dữ liệu</span>
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_3">Nghiên cứu Blockchain</span>
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_4">Làm việc nhóm</span>
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_5">Xử lý tình huống</span>
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_6">Học hỏi nhanh</span>
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_7">Chủ động trong công việc</span>
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_8">Quản lý thời gian</span>
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_9">Cẩn thận, tỉ mỉ</span>
+                            <span class="bg-slate-700 hover:bg-primary transition-colors px-4 py-2 rounded-lg text-sm font-medium border border-slate-600" data-i18n="skill_10">Microsoft Office Thành thạo</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Contact -->
+    <footer id="contact" class="bg-slate-900 border-t border-slate-800 pt-16 pb-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
+                <div class="text-center md:text-left">
+                    <h2 class="text-3xl font-bold mb-2" data-i18n="footer_title">Sẵn sàng hợp tác?</h2>
+                    <p class="text-slate-400" data-i18n="footer_desc">Hãy liên hệ với tôi để cùng tạo ra những giải pháp công nghệ tuyệt vời.</p>
+                </div>
+                <div class="flex gap-4">
+                    <a href="mailto:nhatminh122004@gmail.com" class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-xl hover:bg-primary hover:text-white transition-all">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/nguyennhatminh1/" target="_blank" class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-xl hover:bg-[#0A66C2] hover:text-white transition-all">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://www.facebook.com/nhatminh19122004/" target="_blank" class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-xl hover:bg-[#1877F2] hover:text-white transition-all">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-slate-800 pt-8">
+                <div class="flex items-center gap-4 text-slate-300 justify-center md:justify-start">
+                    <i class="fas fa-map-marker-alt text-primary text-xl w-6"></i>
+                    <span data-i18n="footer_addr">Quận 10, TP. Hồ Chí Minh</span>
+                </div>
+                <div class="flex items-center gap-4 text-slate-300 justify-center md:justify-start">
+                    <i class="fas fa-phone-alt text-primary text-xl w-6"></i>
+                    <span>0364 244 786</span>
+                </div>
+                <div class="flex items-center gap-4 text-slate-300 justify-center md:justify-start">
+                    <i class="fas fa-envelope text-primary text-xl w-6"></i>
+                    <span>nhatminh122004@gmail.com</span>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center text-slate-500 text-sm">
+                <p>&copy; 2026 Nguyễn Nhất Minh. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // --- TRANSLATION DATA ---
+        const translations = {
+            vi: {
+                page_title: "Nguyễn Nhất Minh | Portfolio",
+                hero_name: "Nguyễn Nhất Minh",
+                nav_about: "Giới thiệu",
+                nav_exp: "Kinh nghiệm",
+                nav_achievements: "Thành tích",
+                nav_skills: "Kỹ năng",
+                nav_contact: "Liên hệ",
+                hero_hello: "Xin chào, tôi là",
+                hero_desc: "Định hướng phát triển trong lĩnh vực AI ứng dụng. Khát khao triển khai và vận hành các giải pháp công nghệ tiên tiến vào thực tiễn doanh nghiệp.",
+                hero_collab: "Hợp tác cùng tôi",
+                about_title: "Mục Tiêu Nghề Nghiệp",
+                about_desc: "Tôi định hướng phát triển sự nghiệp trong lĩnh vực <strong>Công nghệ thông tin</strong>, tập trung vào <strong>ứng dụng trí tuệ nhân tạo (AI) và các giải pháp công nghệ hiện đại</strong> vào thực tiễn. Mục tiêu của tôi là trở thành một nhân sự kỹ thuật có khả năng phân tích, thiết kế và triển khai các hệ thống hiệu quả, góp phần tối ưu vận hành và gia tăng giá trị cho doanh nghiệp. Tôi luôn chủ động trau dồi kiến thức, cập nhật công nghệ mới và tích lũy kinh nghiệm dự án, hướng đến xây dựng nền tảng vững chắc trong AI ứng dụng, dữ liệu và tự động hóa, với mục tiêu dài hạn trở thành chuyên gia công nghệ tạo ra các giải pháp thực tiễn, bền vững.",
+                exp_title: "Kinh Nghiệm Làm Việc",
+                exp1_role: "Chuyên Viên Kỹ Thuật",
+                exp1_company: "Viện Nghiên Cứu Giáo Dục và Kinh Tế Quốc Tế (ISIEE)",
+                exp1_time: "10/2025 - Nay",
+                exp1_desc1: "Quản lý, vận hành và đảm bảo sự ổn định cho các hệ thống kỹ thuật công nghệ của Viện.",
+                exp1_desc2: "Nghiên cứu và hỗ trợ triển khai các giải pháp số hóa, ứng dụng AI phục vụ công tác giáo dục và kinh tế.",
+                exp2_role: "Intern AI Prompt",
+                exp2_company: "Công ty Cổ Phần SELA HOLDINGS",
+                exp2_time: "07/2025 - 09/2025",
+                exp2_desc1: "<strong>Phát triển nội dung học tập bằng AI:</strong> Sử dụng ChatGPT tạo kịch bản, lý thuyết, hội thoại, tối ưu và cá nhân hóa nội dung cho học viên.",
+                exp2_desc2: "<strong>Tạo video học sinh động:</strong> Ứng dụng Capcut và VEO3 tạo/chỉnh sửa video, thêm hiệu ứng, âm thanh, tăng tính tương tác.",
+                exp2_desc3: "<strong>Phân tích dữ liệu:</strong> Sử dụng AI phân tích tiến độ, đề xuất bài học và điều chỉnh mức độ khó phù hợp với từng cá nhân.",
+                exp3_role: "Cộng tác viên CT-CTSV",
+                exp3_company: "Phòng Chính Trị - Công Tác Sinh Viên HUFLIT",
+                exp3_time: "03/2025 - 10/2025",
+                exp3_desc1: "Tiếp nhận thông tin ban đầu, hỗ trợ và giải đáp thắc mắc cho phụ huynh và sinh viên.",
+                exp3_desc2: "Hỗ trợ tổ chức các chương trình của phòng, thực hiện nghiệp vụ và ghi nhận vấn đề.",
+                exp4_role: "Trưởng phòng Technology",
+                exp4_company: "CLB Fintech và Đầu tư tài chính HUFLIT",
+                exp4_time: "2023 - 06/2024",
+                exp4_desc1: "Điều hành, quản lý các vấn đề IT của CLB trong sự kiện.",
+                exp4_desc2: "Tư vấn IT cho Ban Chấp hành và hỗ trợ thành viên về công nghệ.",
+                exp4_desc3: "Xây dựng và thiết kế nội dung truyền thông cho workshop, chia sẻ công nghệ.",
+                exp5_role: "IT Research - Blockchain",
+                exp5_company: "Mạng lưới Thúc đẩy Fintech và Tài sản số (FADA)",
+                exp5_time: "06/2023 - 06/2024",
+                exp5_desc1: "Nghiên cứu chuyên sâu xu hướng blockchain (DeFi, Layer 1/2, NFT, GameFi, ZKP) phục vụ chiến lược.",
+                exp5_desc2: "Tổng hợp dữ liệu (CoinMarketCap, Dune Analytics...) viết báo cáo thị trường và đề xuất giải pháp.",
+                achv_title: "Thành Tích & Danh Hiệu",
+                achv1_title: "Sinh viên 5 tốt cấp trường",
+                achv1_desc: "Trường ĐH Ngoại Ngữ - Tin học TPHCM (HUFLIT)",
+                achv_year: "Năm học 2024 - 2025",
+                achv2_title: "Đoàn viên Xuất sắc",
+                achv2_desc: "Hoàn thành xuất sắc nhiệm vụ - Trường ĐH HUFLIT",
+                achv3_title: "Giấy khen cuộc thi \"Đảng trong tôi\"",
+                achv4_title: "Bằng khen cuộc thi \"Đảng trong tôi\"",
+                achv4_desc: "Tỉnh Ủy Tiền Giang (trước khi sáp nhập)",
+                achv5_title: "Thanh niên tiên tiến làm theo lời Bác",
+                achv5_desc: "Cấp Khoa - Trường ĐH Ngoại Ngữ - Tin học TPHCM",
+                achv6_title: "Cán bộ Đoàn - Hội Xuất Sắc",
+                edu_title: "Học Vấn",
+                edu_uni: "Đại học Ngoại Ngữ - Tin Học TPHCM (HUFLIT)",
+                edu_major: "<strong>Ngành:</strong> Công nghệ thông tin",
+                edu_spec: "<strong>Chuyên ngành:</strong> Công nghệ Phần mềm",
+                edu_time: "2022 - Nay",
+                cert_title: "Chứng Chỉ",
+                skill_title: "Kỹ Năng Chuyên Môn & Mềm",
+                skill_1: "Ứng dụng AI (ChatGPT, VEO3...)",
+                skill_2: "Phân tích dữ liệu",
+                skill_3: "Nghiên cứu Blockchain",
+                skill_4: "Làm việc nhóm",
+                skill_5: "Xử lý tình huống",
+                skill_6: "Học hỏi nhanh",
+                skill_7: "Chủ động trong công việc",
+                skill_8: "Quản lý thời gian",
+                skill_9: "Cẩn thận, tỉ mỉ",
+                skill_10: "Microsoft Office Thành thạo",
+                footer_title: "Sẵn sàng hợp tác?",
+                footer_desc: "Hãy liên hệ với tôi để cùng tạo ra những giải pháp công nghệ tuyệt vời.",
+                footer_addr: "Quận 10, TP. Hồ Chí Minh"
+            },
+            en: {
+                page_title: "Nguyen Nhat Minh | Portfolio",
+                hero_name: "Nguyen Nhat Minh",
+                nav_about: "About",
+                nav_exp: "Experience",
+                nav_achievements: "Achievements",
+                nav_skills: "Skills",
+                nav_contact: "Contact",
+                hero_hello: "Hello, I am",
+                hero_desc: "Aiming to develop a career in Applied AI. Eager to deploy and operate advanced technological solutions in real-world enterprise environments.",
+                hero_collab: "Work with me",
+                about_title: "Career Objective",
+                about_desc: "I aim to develop my career in <strong>Information Technology</strong>, focusing on the <strong>application of Artificial Intelligence (AI) and modern technology solutions</strong> into practice. My goal is to become a technical professional capable of analyzing, designing, and deploying efficient systems, contributing to optimizing operations and adding value to businesses. I continuously enhance my knowledge, update new technologies, and accumulate project experience, aiming to build a solid foundation in applied AI, data, and automation, with the long-term goal of becoming a technology expert who creates practical, sustainable solutions.",
+                exp_title: "Work Experience",
+                exp1_role: "Technical Specialist",
+                exp1_company: "Institute of Studies of International Education and Economics (ISIEE)",
+                exp1_time: "10/2025 - Present",
+                exp1_desc1: "Manage, operate, and ensure the stability of the Institute's technical and technological systems.",
+                exp1_desc2: "Research and support the deployment of digitization solutions and AI applications for education and economics.",
+                exp2_role: "AI Prompt Intern",
+                exp2_company: "SELA HOLDINGS JSC",
+                exp2_time: "07/2025 - 09/2025",
+                exp2_desc1: "<strong>AI Learning Content Development:</strong> Use ChatGPT to create scripts, theory, conversations, optimizing and personalizing content for learners.",
+                exp2_desc2: "<strong>Dynamic Educational Video Creation:</strong> Apply Capcut and VEO3 to create/edit videos, add effects, sound, and increase interactivity.",
+                exp2_desc3: "<strong>Data Analysis:</strong> Use AI to analyze progress, recommend lessons, and adjust difficulty levels to suit each individual.",
+                exp3_role: "Student Affairs Collaborator",
+                exp3_company: "Office of Political & Student Affairs, HUFLIT",
+                exp3_time: "03/2025 - 10/2025",
+                exp3_desc1: "Receive initial information, provide support, and answer questions for parents and students.",
+                exp3_desc2: "Support organizing the department's programs, perform professional tasks, and record issues.",
+                exp4_role: "Head of Technology Department",
+                exp4_company: "HUFLIT Fintech & Financial Investment Club",
+                exp4_time: "2023 - 06/2024",
+                exp4_desc1: "Operate and manage IT issues for the Club during events.",
+                exp4_desc2: "Provide IT consulting for the Executive Board and support members with technology.",
+                exp4_desc3: "Build and design communication content for workshops, sharing technology knowledge.",
+                exp5_role: "IT Research - Blockchain",
+                exp5_company: "Fintech and Digital Asset Development Network (FADA)",
+                exp5_time: "06/2023 - 06/2024",
+                exp5_desc1: "In-depth research on blockchain trends (DeFi, Layer 1/2, NFT, GameFi, ZKP) for strategic purposes.",
+                exp5_desc2: "Synthesize data (CoinMarketCap, Dune Analytics...) to write market reports and propose solutions.",
+                achv_title: "Achievements & Awards",
+                achv1_title: "University-level 'Student of 5 Merits'",
+                achv1_desc: "Ho Chi Minh City University of Foreign Languages - Information Technology (HUFLIT)",
+                achv_year: "Academic Year 2024 - 2025",
+                achv2_title: "Excellent Union Member",
+                achv2_desc: "Successfully completed assigned tasks - HUFLIT",
+                achv3_title: "Certificate of Merit in 'The Party in Me' Competition",
+                achv4_title: "Diploma of Merit in 'The Party in Me' Competition",
+                achv4_desc: "Tien Giang Provincial Party Committee (prior to merger)",
+                achv5_title: "Advanced Youth Following Uncle Ho's Teachings",
+                achv5_desc: "Faculty Level - HUFLIT",
+                achv6_title: "Outstanding Union/Association Cadre",
+                edu_title: "Education",
+                edu_uni: "Ho Chi Minh City University of Foreign Languages - IT (HUFLIT)",
+                edu_major: "<strong>Major:</strong> Information Technology",
+                edu_spec: "<strong>Specialization:</strong> Software Engineering",
+                edu_time: "2022 - Present",
+                cert_title: "Certifications",
+                skill_title: "Professional & Soft Skills",
+                skill_1: "Applied AI (ChatGPT, VEO3...)",
+                skill_2: "Data Analysis",
+                skill_3: "Blockchain Research",
+                skill_4: "Teamwork",
+                skill_5: "Problem Solving",
+                skill_6: "Fast Learner",
+                skill_7: "Proactive",
+                skill_8: "Time Management",
+                skill_9: "Detail-oriented",
+                skill_10: "Proficient in MS Office",
+                footer_title: "Ready to collaborate?",
+                footer_desc: "Contact me to build amazing technology solutions together.",
+                footer_addr: "District 10, Ho Chi Minh City"
+            }
+        };
+
+        // --- LANGUAGE TOGGLE LOGIC ---
+        function toggleLanguage() {
+            const currentLang = document.documentElement.lang || 'vi';
+            const newLang = currentLang === 'vi' ? 'en' : 'vi';
+            changeLanguage(newLang);
+        }
+
+        function changeLanguage(lang) {
+            localStorage.setItem('preferredLang', lang);
+            document.documentElement.lang = lang;
+            
+            // Update button styles
+            const toggleBtn = document.getElementById('lang-toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.innerHTML = lang === 'vi' 
+                    ? '🌐 EN' 
+                    : '<img src="https://flagcdn.com/w20/vn.png" class="w-4 h-3 mr-1.5 object-cover rounded-sm" alt="VN Flag"> VN';
+            }
+            
+            // Update texts
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    if(element.tagName === 'TITLE') {
+                        document.title = translations[lang][key];
+                    } else {
+                        element.innerHTML = translations[lang][key];
+                    }
+                }
+            });
+
+            // Update typing effect language
+            updateTypingPhrases(lang);
+        }
+
+        // Initialize language on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferredLang') || 'vi';
+            changeLanguage(savedLang);
+        });
+
+        // --- TYPING EFFECT LOGIC ---
+        const typingText = document.getElementById('typing-text');
+        
+        const allPhrases = {
+            vi: ['Chuyên Viên Kỹ Thuật', 'Chuyên viên AI Ứng dụng', 'Chuyên Viên AI Prompt', 'Chuyên Viên nghiên cứu Blockchain'],
+            en: ['Technical Specialist', 'Applied AI Specialist', 'AI Prompt Engineer', 'Blockchain Researcher']
+        };
+        
+        let currentLangPhrases = allPhrases['vi'];
+        let phraseIndex = 0;
+        let letterIndex = 0;
+        let isDeleting = false;
+        let typingTimeout;
+
+        function updateTypingPhrases(lang) {
+            currentLangPhrases = allPhrases[lang] || allPhrases['vi'];
+            
+            // Dọn dẹp bộ đếm trước đó để tránh xung đột (race condition)
+            clearTimeout(typingTimeout);
+            
+            // Làm sạch nội dung hiện tại và reset index khi đổi ngôn ngữ
+            if (typingText) {
+                typingText.textContent = '';
+            }
+            phraseIndex = 0;
+            letterIndex = 0;
+            isDeleting = false;
+            
+            // Bắt đầu gõ ngôn ngữ mới
+            type();
+        }
+
+        function type() {
+            if (!typingText) return;
+            
+            // Ngăn chặn lỗi index khi thay đổi mảng độ dài khác nhau
+            if (phraseIndex >= currentLangPhrases.length) phraseIndex = 0; 
+            
+            const currentPhrase = currentLangPhrases[phraseIndex];
+            
+            if (isDeleting) {
+                typingText.textContent = currentPhrase.substring(0, letterIndex - 1);
+                letterIndex--;
+            } else {
+                typingText.textContent = currentPhrase.substring(0, letterIndex + 1);
+                letterIndex++;
+            }
+
+            let typeSpeed = isDeleting ? 40 : 100;
+
+            if (!isDeleting && letterIndex === currentPhrase.length) {
+                typeSpeed = 2000; // Dừng lại ở cuối câu
+                isDeleting = true;
+            } else if (isDeleting && letterIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % currentLangPhrases.length;
+                typeSpeed = 500; // Tạm dừng trước khi gõ từ tiếp theo
+            }
+
+            typingTimeout = setTimeout(type, typeSpeed);
+        }
+
+        // --- SCROLL REVEAL ANIMATION ---
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal(); // Kích hoạt ngay khi tải trang
+    </script>
+</body>
+</html>
